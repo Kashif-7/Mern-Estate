@@ -87,3 +87,27 @@ export const signin = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
 };
+
+export const google = async (req, res, next) => {
+    try{
+        const user = await User.findOne({email: req.body.email});
+        if(user){
+            const token = jwt.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const {password: pass , ...data} = user._doc;
+            res.cookie('token', token, { httpOnly: true });
+            res.status(200).json({data});
+        }else{
+            const generatedPassword = Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+            const newUser = new User ({username: req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-8), email: req.body.email, password: hashedPassword, avatar: req.body.photo});
+            await newUser.save();
+            const token = jwt.sign({ email: newUser.email, id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+           const {password: pass , ...data} = newUser._doc;
+            res.cookie('token', token, { httpOnly: true });
+            
+            res.status(200).json({data});
+        }
+    }catch(error){
+        next(error);
+    }
+}
