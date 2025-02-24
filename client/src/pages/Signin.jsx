@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { userSigninRequest, userSigninSuccess, userSigninFailure } from '../redux/userSlice';
+import OAuth from '../components/oAuth';
 
 
 export default function Signin() {
   const [formData, setFormData] = useState({});
   const dispatch = useDispatch();
-  const {loading, error} = useSelector((state) => state.user);
+  const {loading} = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -44,7 +45,7 @@ export default function Signin() {
         
       }
     } catch (error) {
-      console.error('Error during signin:', error);
+      // console.error('Error during signin:', error);
       dispatch(userSigninFailure('Something went wrong', error.message));
     }
   };
@@ -81,7 +82,7 @@ export default function Signin() {
       </div>
 
       {/*  Display error message */}
-      {error && <p className="text-red-500 text-xs italic mt-4 text-center">{error}</p>}
+      {/* {error && <p className="text-red-500 text-xs italic mt-4 text-center">{error}</p>} */}
 
       <div className="flex items-center justify-between">
         <button
@@ -91,7 +92,11 @@ export default function Signin() {
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
+        {/* <OAuth /> */}
+        
       </div>
+      
+      <OAuth />
 
       <div className="mt-4 text-center">
         <span className="text-gray-700">Dont have an account? </span>
